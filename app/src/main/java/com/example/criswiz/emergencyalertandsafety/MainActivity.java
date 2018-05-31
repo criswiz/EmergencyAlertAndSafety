@@ -1,50 +1,53 @@
 package com.example.criswiz.emergencyalertandsafety;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button jLogin;
+    FirebaseAuth auth;
+    FirebaseUser user;
 
-    private final static int MAX_PERMISSION=1000;
+    Button login, register;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        jLogin = findViewById(R.id.btnSignIn);
-        jLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(
-                       AuthUI.getInstance().createSignInIntentBuilder()
-                        .setAllowNewEmailAccounts(true).build(),MAX_PERMISSION
-                );
-            }
-        });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == MAX_PERMISSION){
-            startNewActivity(resultCode,data);
-        }
-    }
-
-    private void startNewActivity(int resultCode, Intent data) {
-        if (resultCode == RESULT_OK){
-            Intent intent = new Intent(MainActivity.this,ListOnline.class);
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        if (user == null) {
+            setContentView(R.layout.activity_main);
+        } else {
+            Intent intent = new Intent(MainActivity.this, MyNavigationDrawerActiviity.class);
             startActivity(intent);
             finish();
-        }else{
-            Toast.makeText(this, "Login Failed!!!", Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+    public void goToRegister(View v){
+        Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void goToLogin (View v){
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
